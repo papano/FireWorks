@@ -1,14 +1,21 @@
 class ParticleSystem {
   
   Particle core;
-  ArrayList<Particle> particles;
+  ArrayList<Particle> particles = new ArrayList<Particle>();
+  int childrenAmount = 500;
 
   ParticleSystem() {
-    core = new Particle(random(-platformWidth/2, platformWidth/2), 
-                        platformOffset, 
-                        random(-platformDepth/2, platformDepth/2), 
-                        random(255));
-    particles = new ArrayList<Particle>();
+    PVector l = new PVector(random(-platformWidth/2, platformWidth/2), 
+                            platformOffset, 
+                            random(-platformDepth/2, platformDepth/2));
+    PVector v = new PVector(0, random(-20, -12), 0);
+    core = new Particle(l, v, true, random(255)); 
+  }
+  
+  ParticleSystem(float x, float y, float z, float hue) {
+    PVector l = new PVector(x, y, z);
+    PVector v = new PVector(0, -15, 0);
+    core = new Particle(l, v, true, hue); 
   }
 
   void update() {
@@ -16,8 +23,10 @@ class ParticleSystem {
       core.applyForce(gravity);
       core.update();
       if (core.explode()) {
-        for (int i = 0; i < 500; i++) {
-          Particle p = new Particle(core.location, core.hue);
+        for (int i = 0; i < childrenAmount; i++) {
+          PVector vel = PVector.random3D();
+          vel.mult(random(10, 20));
+          Particle p = new Particle(core.location, vel, false, core.hue);
           particles.add(p);
         }
         core = null;
@@ -56,5 +65,9 @@ class ParticleSystem {
     long num = (core != null) ? 1 : 0;
     num += particles.size();
     return num;
+  }
+  
+  void setChildrenAmount(int amount) {
+    childrenAmount = amount;
   }
 }

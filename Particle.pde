@@ -7,24 +7,15 @@ class Particle {
   float ttl = 0;
   float hue;
 
-  Particle(float x, float y, float z, float hue) {
-    location = new PVector(x, y, z);
-    velocity = new PVector(0, random(-20, -12), 0);
-    acceleration = new PVector(0, 0, 0);
-    isCore = true;
-    this.hue = hue;
-  }
-
-  Particle(PVector loc, float hue) {
+  Particle(PVector loc, PVector vel, boolean isCore, float hue) {
     location = loc.copy();
-    velocity = PVector.random3D();
-    velocity.mult(random(10, 20));
+    velocity = vel.copy();
     acceleration = new PVector(0, 0, 0);
-    isCore = false;
-    ttl = 255;
+    this.isCore = isCore;
     this.hue = hue;
+    ttl = 255;
   }
-
+  
   void update() {
     velocity.add(acceleration);
     location.add(velocity);
@@ -40,7 +31,7 @@ class Particle {
   }
 
   boolean explode() {
-    return velocity.y >= 0;
+    return (isCore && velocity.y >= 0);
   }
 
   boolean expired() {
@@ -50,8 +41,8 @@ class Particle {
   void display() {
     colorMode(HSB);
     if (isCore) {
-      stroke(hue, 0, 255);
-      strokeWeight(8);
+      stroke(hue, 255, 255);
+      strokeWeight(6);
     } else {
       stroke(hue, 255, 255, ttl);
       strokeWeight(4);
